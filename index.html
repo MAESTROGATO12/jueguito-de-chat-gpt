@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>No Confíes En La Pantalla</title>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#000;color:#0f0;font-family:monospace;overflow:hidden}
+#game{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#player{width:20px;height:20px;background:#0f0;position:absolute}
+.enemy{width:20px;height:20px;background:red;position:absolute}
+#msg{position:absolute;bottom:10px;font-size:14px}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<div id="game">
+<div id="player"></div>
+<div id="msg">Muévete con WASD</div>
+</div>
+<script>
+let game=document.getElementById("game")
+let player=document.getElementById("player")
+let msg=document.getElementById("msg")
+let x=window.innerWidth/2
+let y=window.innerHeight/2
+let speed=5
+let phase=1
+let enemies=[]
+let trust=0
+player.style.left=x+"px"
+player.style.top=y+"px"
+
+function spawnEnemy(px,py){
+let e=document.createElement("div")
+e.className="enemy"
+e.style.left=px+"px"
+e.style.top=py+"px"
+game.appendChild(e)
+enemies.push(e)
+}
+
+for(let i=0;i<10;i++){
+spawnEnemy(Math.random()*window.innerWidth,Math.random()*window.innerHeight)
+}
+
+document.addEventListener("keydown",e=>{
+if(e.key==="w")y-=speed
+if(e.key==="s")y+=speed
+if(e.key==="a")x-=speed
+if(e.key==="d")x+=speed
+player.style.left=x+"px"
+player.style.top=y+"px"
+})
+
+function collide(a,b){
+let r1=a.getBoundingClientRect()
+let r2=b.getBoundingClientRect()
+return !(r1.right<r2.left||r1.left>r2.right||r1.bottom<r2.top||r1.top>r2.bottom)
+}
+
+function loop(){
+enemies.forEach(e=>{
+if(collide(player,e)){
+phase++
+trust++
+msg.innerText="Algo no va bien..."
+e.remove()
+}
+})
+if(phase===2){
+msg.innerText="¿Por qué sigues jugando?"
+speed=7
+}
+if(phase===3){
+document.body.style.background="#111"
+msg.innerText="No deberías confiar en esto"
+}
+if(phase===4){
+msg.innerText=""
+game.innerHTML=""
+let t=document.createElement("div")
+t.innerText="TE OBSERVA"
+t.style.fontSize="40px"
+game.appendChild(t)
+}
+if(phase===5){
+document.body.style.background="#fff"
+document.body.style.color="#000"
+game.innerHTML="¿Pensaste que era un juego?"
+}
+requestAnimationFrame(loop)
+}
+loop()
+
+let data=[
+1,0,1,0,1,1,0,1,0,1,
+1,1,0,0,1,0,1,0,1,1,
+0,1,1,0,1,1,0,0,1,0,
+1,0,1,1,0,1,1,0,1,1,
+0,1,0,1,1,0,1,1,0,1,
+1,0,1,0,1,1,0,1,0,1,
+1,1,0,0,1,0,1,0,1,1,
+0,1,1,0,1,1,0,0,1,0,
+1,0,1,1,0,1,1,0,1,1,
+0,1,0,1,1,0,1,1,0,1
+]
+
+let mind=[]
+for(let i=0;i<500;i++){
+mind.push(Math.random()>0.5?1:0)
+}
+
+function think(){
+trust+=mind[Math.floor(Math.random()*mind.length)]
+if(trust>50){
+document.body.innerHTML="<h1>YA ES TARDE</h1>"
+}
+}
+setInterval(think,2000)
+</script>
+</body>
+</html>
