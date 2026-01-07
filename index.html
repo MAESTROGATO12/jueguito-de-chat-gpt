@@ -139,4 +139,178 @@ o.style.top=o.offsetTop+dy+"px"
 </script>
 
 </body>
+</html><!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PROTOTIPO</title>
+<style>
+html,body{
+margin:0;
+padding:0;
+width:100%;
+height:100%;
+background:#000;
+color:#fff;
+font-family:monospace;
+overflow:hidden;
+transition:filter .3s, background .3s
+}
+#ui{
+position:absolute;
+top:10px;
+left:10px;
+font-size:14px;
+opacity:.9;
+pointer-events:none
+}
+#player{
+width:20px;
+height:20px;
+background:#0f0;
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%)
+}
+.orb{
+width:10px;
+height:10px;
+background:#fff;
+border-radius:50%;
+position:absolute
+}
+.glitch{
+filter:blur(1px) contrast(120%) hue-rotate(20deg)
+}
+.fade{
+opacity:.1
+}
+</style>
+</head>
+<body>
+
+<div id="ui">Muévete con WASD</div>
+<div id="player"></div>
+
+<script>
+const player=document.getElementById("player")
+const ui=document.getElementById("ui")
+
+let px=innerWidth/2
+let py=innerHeight/2
+let speed=4
+let score=0
+let phase=0
+let keys={}
+let orbs=[]
+let paranoia=0
+let timePlayed=0
+let trust=false
+
+document.addEventListener("keydown",e=>keys[e.key]=true)
+document.addEventListener("keyup",e=>keys[e.key]=false)
+
+function spawnOrb(){
+let o=document.createElement("div")
+o.className="orb"
+o.style.left=Math.random()*innerWidth+"px"
+o.style.top=Math.random()*innerHeight+"px"
+document.body.appendChild(o)
+orbs.push(o)
+}
+
+for(let i=0;i<6;i++)spawnOrb()
+
+function collide(a,b){
+let r1=a.getBoundingClientRect()
+let r2=b.getBoundingClientRect()
+return !(r1.right<r2.left||r1.left>r2.right||r1.bottom<r2.top||r1.top>r2.bottom)
+}
+
+function update(){
+timePlayed++
+
+if(keys["w"])py-=speed
+if(keys["s"])py+=speed
+if(keys["a"])px-=speed
+if(keys["d"])px+=speed
+
+player.style.left=px+"px"
+player.style.top=py+"px"
+
+orbs.forEach((o,i)=>{
+if(collide(player,o)){
+o.remove()
+orbs.splice(i,1)
+score++
+paranoia++
+spawnOrb()
+}
+})
+
+if(score>4 && phase===0){
+ui.innerText="Bien. Continúa."
+phase=1
+}
+
+if(score>8 && phase===1){
+ui.innerText="No era necesario."
+speed=5
+phase=2
+}
+
+if(score>12 && phase===2){
+document.body.classList.add("glitch")
+ui.innerText="¿Te sientes observado?"
+phase=3
+}
+
+if(score>16 && phase===3){
+ui.innerText=""
+document.body.classList.add("fade")
+phase=4
+}
+
+if(paranoia>20){
+ui.innerText="Para."
+trust=true
+}
+
+requestAnimationFrame(update)
+}
+
+update()
+
+setInterval(()=>{
+if(phase>=2){
+orbs.forEach(o=>{
+let dx=(px-o.offsetLeft)*0.02
+let dy=(py-o.offsetTop)*0.02
+o.style.left=o.offsetLeft+dx+"px"
+o.style.top=o.offsetTop+dy+"px"
+})
+}
+},30)
+
+setTimeout(()=>{
+document.body.style.background="#020202"
+},8000)
+
+setTimeout(()=>{
+if(trust){
+document.body.innerHTML="<h1>NO TENÍAS QUE SEGUIR</h1>"
+}else{
+ui.innerText="Puedes irte cuando quieras"
+}
+},15000)
+
+setTimeout(()=>{
+document.body.innerHTML=""
+document.body.style.background="#000"
+},18000)
+</script>
+
+</body>
 </html>
+
