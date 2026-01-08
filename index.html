@@ -2,119 +2,121 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Recolecta</title>
+<title>Demo</title>
 <style>
 html,body{
 margin:0;
 padding:0;
 width:100%;
 height:100%;
-background:#111;
-color:#fff;
+background:#1a1a1a;
 font-family:monospace;
-overflow:hidden
-}
-#ui{
-position:absolute;
-top:10px;
-left:10px;
-font-size:14px
+overflow:hidden;
+transition:background 1s
 }
 #player{
-width:20px;
-height:20px;
-background:#4caf50;
+width:14px;
+height:14px;
+background:#e0e0e0;
 position:absolute;
 left:50%;
 top:50%;
-transform:translate(-50%,-50%)
+transform:translate(-50%,-50%);
+transition:background .5s
 }
-.orb{
-width:10px;
-height:10px;
-background:#fff;
-border-radius:50%;
-position:absolute
+#text{
+position:absolute;
+bottom:20px;
+width:100%;
+text-align:center;
+color:#aaa;
+font-size:13px;
+letter-spacing:1px;
+opacity:.8
+}
+#shadow{
+position:absolute;
+width:14px;
+height:14px;
+background:#000;
+opacity:0;
+pointer-events:none
 }
 </style>
 </head>
 <body>
 
-<div id="ui">
-Puntos: <span id="score">0</span><br>
-Muévete con WASD
-</div>
 <div id="player"></div>
+<div id="shadow"></div>
+<div id="text">Explora</div>
 
 <script>
 const player=document.getElementById("player")
-const scoreEl=document.getElementById("score")
-const ui=document.getElementById("ui")
+const shadow=document.getElementById("shadow")
+const text=document.getElementById("text")
 
 let px=innerWidth/2
 let py=innerHeight/2
-let speed=4
-let score=0
-let keys={}
-let orbs=[]
-let startTime=Date.now()
-let phase="normal"
+let vx=0
+let vy=0
+let speed=0.4
+let time=0
+let calm=true
+let drift=0
 
+let keys={}
 document.addEventListener("keydown",e=>keys[e.key]=true)
 document.addEventListener("keyup",e=>keys[e.key]=false)
 
-function spawnOrb(){
-let o=document.createElement("div")
-o.className="orb"
-o.style.left=Math.random()*(innerWidth-20)+"px"
-o.style.top=Math.random()*(innerHeight-20)+"px"
-document.body.appendChild(o)
-orbs.push(o)
-}
-
-for(let i=0;i<8;i++)spawnOrb()
-
-function collide(a,b){
-let r1=a.getBoundingClientRect()
-let r2=b.getBoundingClientRect()
-return !(r1.right<r2.left||r1.left>r2.right||r1.bottom<r2.top||r1.top>r2.bottom)
-}
-
 function update(){
-if(keys["w"])py-=speed
-if(keys["s"])py+=speed
-if(keys["a"])px-=speed
-if(keys["d"])px+=speed
+time++
+
+if(keys["w"])vy-=speed
+if(keys["s"])vy+=speed
+if(keys["a"])vx-=speed
+if(keys["d"])vx+=speed
+
+vx*=0.92
+vy*=0.92
+
+px+=vx
+py+=vy
 
 player.style.left=px+"px"
 player.style.top=py+"px"
 
-orbs.forEach((o,i)=>{
-if(collide(player,o)){
-o.remove()
-orbs.splice(i,1)
-score++
-scoreEl.innerText=score
-spawnOrb()
-}
-})
-
-let elapsed=(Date.now()-startTime)/1000
-
-if(elapsed>300 && phase==="normal"){
-phase="shift"
-ui.innerHTML="Puntos: "+score
-document.body.style.background="#0e0e0e"
+if(time>600 && calm){
+text.innerText=""
+calm=false
 }
 
-if(phase==="shift"){
-if(Math.random()<0.005){
-ui.innerHTML="Puntos: "+score+"<br>"
+if(time>900){
+drift+=0.0005
+px+=Math.sin(time*0.01)*drift*10
+py+=Math.cos(time*0.01)*drift*10
 }
-if(Math.random()<0.002){
-document.body.style.background=
-"#"+Math.floor(Math.random()*111111)
+
+if(time>1200){
+document.body.style.background="#141414"
 }
+
+if(time>1500){
+shadow.style.opacity=0.15
+shadow.style.left=(px-20)+"px"
+shadow.style.top=(py-20)+"px"
+}
+
+if(time>1800){
+player.style.background="#cfcfcf"
+}
+
+if(time>2200){
+shadow.style.left=(px+Math.sin(time*0.05)*30)+"px"
+shadow.style.top=(py+Math.cos(time*0.05)*30)+"px"
+}
+
+if(time>2600){
+text.innerText="no era necesario moverte tanto"
 }
 
 requestAnimationFrame(update)
@@ -125,4 +127,3 @@ update()
 
 </body>
 </html>
-
