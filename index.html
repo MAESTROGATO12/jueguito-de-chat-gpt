@@ -3,74 +3,156 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FNAF Loco - Prueba</title>
+<title>FNAF Loco - Noche Extrema</title>
 <style>
   body {
     font-family: 'Comic Sans MS', sans-serif;
-    background-color: #222;
+    background-color: #111;
     color: #fff;
     text-align: center;
+    margin: 0;
+    padding: 0;
   }
   h1 {
     color: #ff6347;
+    margin-top: 20px;
   }
-  button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 1.2em;
-    cursor: pointer;
+  #game {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
   }
   #camera {
     width: 400px;
     height: 300px;
-    margin: 20px auto;
-    background-color: #111;
+    background-color: #222;
+    border: 4px solid #fff;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.5em;
-    border: 3px solid #fff;
+    margin-right: 20px;
+  }
+  #controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 5px 0;
+    font-size: 1.1em;
+    cursor: pointer;
   }
   #story {
-    margin-top: 20px;
+    margin-top: 30px;
     font-size: 1.2em;
+    min-height: 50px;
+  }
+  #status {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #0f0;
   }
 </style>
 </head>
 <body>
 
-<h1>FNAF Loco - Noche de Prueba</h1>
-<p>¡Sobrevive la noche y mira las locuras de los animatrónicos!</p>
+<h1>FNAF Loco - Noche Extrema</h1>
+<p>¡Sobrevive la noche mientras los animatrónicos hacen locuras absurdas!</p>
 
-<button onclick="changeCamera(1)">Cámara 1</button>
-<button onclick="changeCamera(2)">Cámara 2</button>
-<button onclick="changeCamera(3)">Cámara 3</button>
+<div id="game">
+  <div id="camera">Cámara 1</div>
+  <div id="controls">
+    <button onclick="changeCamera(1)">Cámara 1</button>
+    <button onclick="changeCamera(2)">Cámara 2</button>
+    <button onclick="changeCamera(3)">Cámara 3</button>
+    <button onclick="closeDoor()">Cerrar puerta 🚪</button>
+    <button onclick="openDoor()">Abrir puerta 🚪</button>
+    <button onclick="drinkCoffee()">Tomar café ☕</button>
+  </div>
+</div>
 
-<div id="camera">Cámara principal</div>
 <div id="story"></div>
+<div id="status">Puerta: abierta | Café: lleno</div>
 
 <script>
-let animatrónicos = ["Pancho el Plátano", "Tosty la Tostadora", "Zapatín"];
-let camera = 1;
+let cameras = ["Cámara 1", "Cámara 2", "Cámara 3"];
+let animatrónicos = [
+  {name: "Pancho el Plátano", location: 1},
+  {name: "Tosty la Tostadora", location: 2},
+  {name: "Zapatín", location: 3},
+  {name: "Doña Zanahoria", location: 1}
+];
+let doorClosed = false;
+let coffee = true;
+let currentCamera = 1;
+
+function updateStatus() {
+  document.getElementById('status').innerHTML = `Puerta: ${doorClosed ? 'cerrada' : 'abierta'} | Café: ${coffee ? 'lleno' : 'vacío'}`;
+}
+
+function randomEvent() {
+  const storyDiv = document.getElementById('story');
+  let events = [
+    "hace breakdance 🤣",
+    "roba tu café ☕",
+    "grita '¡Soy la estrella del show!' 🎤",
+    "está haciendo una pose ridícula 😎",
+    "se pelea con una planta 🌱",
+    "te cuenta un chiste terrible 😂"
+  ];
+  return events[Math.floor(Math.random() * events.length)];
+}
 
 function changeCamera(cam) {
-  camera = cam;
+  currentCamera = cam;
   const camDiv = document.getElementById('camera');
-  const storyDiv = document.getElementById('story');
+  camDiv.innerHTML = cameras[cam-1];
 
-  // Cambio de cámara
-  camDiv.innerHTML = "Cámara " + cam;
+  let storyDiv = document.getElementById('story');
 
-  // Evento aleatorio divertido
-  let evento = Math.floor(Math.random() * 3);
-  if(evento === 0) {
-    storyDiv.innerHTML = animatrónicos[cam - 1] + " está bailando breakdance 🤣";
-  } else if(evento === 1) {
-    storyDiv.innerHTML = animatrónicos[cam - 1] + " robó tu café ☕";
+  let visibleAnimatrónicos = animatrónicos.filter(a => a.location === cam);
+  if(visibleAnimatrónicos.length === 0) {
+    storyDiv.innerHTML = "Todo tranquilo por ahora... 😌";
   } else {
-    storyDiv.innerHTML = animatrónicos[cam - 1] + " está haciendo una pose ridícula 😎";
+    let anim = visibleAnimatrónicos[Math.floor(Math.random() * visibleAnimatrónicos.length)];
+    storyDiv.innerHTML = `${anim.name} ${randomEvent()}`;
   }
 }
+
+function closeDoor() {
+  doorClosed = true;
+  updateStatus();
+  document.getElementById('story').innerHTML = "Has cerrado la puerta. Los animatrónicos parecen confundidos 🤔";
+}
+
+function openDoor() {
+  doorClosed = false;
+  updateStatus();
+  document.getElementById('story').innerHTML = "Has abierto la puerta. ¡Que empiece el caos! 😎";
+}
+
+function drinkCoffee() {
+  if(coffee) {
+    coffee = false;
+    updateStatus();
+    document.getElementById('story').innerHTML = "Bebiste café. Ahora estás listo para sobrevivir la locura ☕💪";
+  } else {
+    document.getElementById('story').innerHTML = "El café se terminó, necesitas más energía ☕😅";
+  }
+}
+
+// Evento aleatorio cada 5 segundos
+setInterval(() => {
+  let anim = animatrónicos[Math.floor(Math.random() * animatrónicos.length)];
+  anim.location = Math.floor(Math.random() * 3) + 1; // se mueve a otra cámara
+  if(Math.random() < 0.3) {
+    document.getElementById('story').innerHTML = `${anim.name} ${randomEvent()}`;
+  }
+}, 5000);
+
+updateStatus();
 </script>
 
 </body>
