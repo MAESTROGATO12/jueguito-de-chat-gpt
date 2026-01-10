@@ -3,62 +3,75 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>La Aventura de Don Plátano</title>
+<title>FNAF Loco - Prueba</title>
 <style>
   body {
     font-family: 'Comic Sans MS', sans-serif;
-    background-color: #fff8dc;
-    color: #333;
+    background-color: #222;
+    color: #fff;
     text-align: center;
-    padding: 50px;
   }
   h1 {
     color: #ff6347;
-    font-size: 3em;
   }
   button {
     padding: 10px 20px;
-    font-size: 1.2em;
     margin: 10px;
+    font-size: 1.2em;
     cursor: pointer;
   }
+  #camera {
+    width: 400px;
+    height: 300px;
+    margin: 20px auto;
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    border: 3px solid #fff;
+  }
   #story {
-    margin-top: 30px;
-    font-size: 1.3em;
+    margin-top: 20px;
+    font-size: 1.2em;
   }
 </style>
 </head>
 <body>
-<h1>La Aventura de Don Plátano</h1>
-<p>¡Ayuda a Don Plátano a encontrar su sombrero perdido!</p>
 
-<button onclick="startAdventure()">Empezar aventura</button>
+<h1>FNAF Loco - Noche de Prueba</h1>
+<p>¡Sobrevive la noche y mira las locuras de los animatrónicos!</p>
 
+<button onclick="changeCamera(1)">Cámara 1</button>
+<button onclick="changeCamera(2)">Cámara 2</button>
+<button onclick="changeCamera(3)">Cámara 3</button>
+
+<div id="camera">Cámara principal</div>
 <div id="story"></div>
 
 <script>
-let stage = 0;
+let animatrónicos = ["Pancho el Plátano", "Tosty la Tostadora", "Zapatín"];
+let camera = 1;
 
-function startAdventure() {
-  const story = document.getElementById('story');
-  stage++;
-  if(stage === 1) {
-    story.innerHTML = "Don Plátano se despierta y descubre que su sombrero fue robado por un grupo de patatas bailarinas. ¿Qué hará?";
-  } else if(stage === 2) {
-    story.innerHTML = "Puede intentar: <br><button onclick='choose(1)'>Persuadirlas con chistes</button> <button onclick='choose(2)'>Ofrecerles jugo de plátano</button>";
+function changeCamera(cam) {
+  camera = cam;
+  const camDiv = document.getElementById('camera');
+  const storyDiv = document.getElementById('story');
+
+  // Cambio de cámara
+  camDiv.innerHTML = "Cámara " + cam;
+
+  // Evento aleatorio divertido
+  let evento = Math.floor(Math.random() * 3);
+  if(evento === 0) {
+    storyDiv.innerHTML = animatrónicos[cam - 1] + " está bailando breakdance 🤣";
+  } else if(evento === 1) {
+    storyDiv.innerHTML = animatrónicos[cam - 1] + " robó tu café ☕";
   } else {
-    story.innerHTML = "¡Fin de la aventura! Reinicia la página para intentarlo otra vez.";
-  }
-}
-
-function choose(option) {
-  const story = document.getElementById('story');
-  if(option === 1) {
-    story.innerHTML = "¡Genial! Las patatas se ríen tanto que devuelven el sombrero a Don Plátano.";
-  } else if(option === 2) {
-    story.innerHTML = "Las patatas se emocionan por el jugo y organizan una fiesta. Don Plátano termina bailando con ellas.";
+    storyDiv.innerHTML = animatrónicos[cam - 1] + " está haciendo una pose ridícula 😎";
   }
 }
 </script>
+
 </body>
 </html>
