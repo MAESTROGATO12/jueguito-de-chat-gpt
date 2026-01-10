@@ -2,140 +2,63 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>alpha</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Aventura de Don Plátano</title>
 <style>
-html,body{
-margin:0;
-padding:0;
-width:100%;
-height:100%;
-background:#0f0f0f;
-overflow:hidden;
-transition:background 2s
-}
-#entity{
-width:12px;
-height:12px;
-background:#dcdcdc;
-position:absolute;
-left:50%;
-top:50%;
-transform:translate(-50%,-50%);
-transition:background 1s
-}
-#presence{
-position:absolute;
-width:12px;
-height:12px;
-background:#000;
-opacity:0;
-pointer-events:none;
-transition:opacity 3s
-}
-#whisper{
-position:absolute;
-bottom:30px;
-width:100%;
-text-align:center;
-color:#888;
-font-family:monospace;
-font-size:12px;
-opacity:0;
-transition:opacity 4s
-}
+  body {
+    font-family: 'Comic Sans MS', sans-serif;
+    background-color: #fff8dc;
+    color: #333;
+    text-align: center;
+    padding: 50px;
+  }
+  h1 {
+    color: #ff6347;
+    font-size: 3em;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    margin: 10px;
+    cursor: pointer;
+  }
+  #story {
+    margin-top: 30px;
+    font-size: 1.3em;
+  }
 </style>
 </head>
 <body>
+<h1>La Aventura de Don Plátano</h1>
+<p>¡Ayuda a Don Plátano a encontrar su sombrero perdido!</p>
 
-<div id="entity"></div>
-<div id="presence"></div>
-<div id="whisper"></div>
+<button onclick="startAdventure()">Empezar aventura</button>
+
+<div id="story"></div>
 
 <script>
-const e=document.getElementById("entity")
-const p=document.getElementById("presence")
-const w=document.getElementById("whisper")
+let stage = 0;
 
-let x=innerWidth/2
-let y=innerHeight/2
-let vx=0
-let vy=0
-
-let activity=0
-let stillness=0
-let awareness=0
-let ended=false
-
-let keys={}
-addEventListener("keydown",k=>keys[k.key]=true)
-addEventListener("keyup",k=>keys[k.key]=false)
-
-function loop(){
-if(ended)return
-
-let moving=false
-
-if(keys["w"]){vy-=0.35;moving=true}
-if(keys["s"]){vy+=0.35;moving=true}
-if(keys["a"]){vx-=0.35;moving=true}
-if(keys["d"]){vx+=0.35;moving=true}
-
-vx*=0.9
-vy*=0.9
-
-x+=vx
-y+=vy
-
-e.style.left=x+"px"
-e.style.top=y+"px"
-
-if(moving){
-activity++
-stillness=0
-}else{
-stillness++
+function startAdventure() {
+  const story = document.getElementById('story');
+  stage++;
+  if(stage === 1) {
+    story.innerHTML = "Don Plátano se despierta y descubre que su sombrero fue robado por un grupo de patatas bailarinas. ¿Qué hará?";
+  } else if(stage === 2) {
+    story.innerHTML = "Puede intentar: <br><button onclick='choose(1)'>Persuadirlas con chistes</button> <button onclick='choose(2)'>Ofrecerles jugo de plátano</button>";
+  } else {
+    story.innerHTML = "¡Fin de la aventura! Reinicia la página para intentarlo otra vez.";
+  }
 }
 
-if(activity>600){
-document.body.style.background="#0b0b0b"
-awareness++
+function choose(option) {
+  const story = document.getElementById('story');
+  if(option === 1) {
+    story.innerHTML = "¡Genial! Las patatas se ríen tanto que devuelven el sombrero a Don Plátano.";
+  } else if(option === 2) {
+    story.innerHTML = "Las patatas se emocionan por el jugo y organizan una fiesta. Don Plátano termina bailando con ellas.";
+  }
 }
-
-if(stillness>400){
-p.style.opacity=0.15
-p.style.left=(x+Math.sin(stillness*0.02)*40)+"px"
-p.style.top=(y+Math.cos(stillness*0.02)*40)+"px"
-awareness++
-}
-
-if(awareness>200){
-w.style.opacity=1
-w.innerText="ya lo notaste"
-}
-
-if(awareness>400){
-e.style.background="#bdbdbd"
-}
-
-if(awareness>650){
-end()
-}
-
-requestAnimationFrame(loop)
-}
-
-function end(){
-ended=true
-document.body.style.background="#000"
-e.style.opacity=0
-p.style.opacity=0
-w.innerText="fin de la observación"
-w.style.opacity=1
-}
-
-loop()
 </script>
-
 </body>
 </html>
-
